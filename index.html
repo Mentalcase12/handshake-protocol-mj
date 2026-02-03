@@ -893,7 +893,7 @@
 
     <script>
         (function() {
-            const apiKey = "AIzaSyCP8-dPU_GUz2YhtAtaV4rSwaqLu6LCcr0";
+            const apiKey = process.env.GEMINI_API_KEY;
             let canvas, ctx, nCanvas, nCtx;
             let w, h;
             let nodes = [];
@@ -1677,3 +1677,4 @@ STRICT RULES:
     </script>
 </body>
 </html>
+
