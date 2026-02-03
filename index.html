@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JORDAN_VALENTINE_OS // V12_ULTRA_GLITCH</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-deep: #020205;
+            --bg-panel: rgba(6, 6, 12, 0.92);
+            --neon-pink: #ff007f;
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --neon-gold: #ffcf10;
+            --neon-red: #ff3131;
+            --font-main: 'Space Grotesk', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --font-header: 'Orbitron', sans-serif;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; padding: 0;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: var(--font-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* GLITCH OVERLAYS */
+        .glitch-overlay {
+            position: fixed; inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.05;
+            background: repeating-linear-gradient(0deg, transparent 0%, rgba(255, 0, 127, 0.5) 1px, transparent 2px);
+            animation: glitch-vibrate 0.2s infinite;
+        }
+
+        @keyframes glitch-vibrate {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .scanlines {
+            position: fixed; inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            background-size: 100% 3px, 3px 100%;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        #master-canvas {
+            position: fixed; top: 0; left: 0; z-index: 1;
+        }
+
+        /* INTERFACE */
+        .os-interface {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 60px 1fr 260px;
+            gap: 15px;
+            padding: 15px;
+            pointer-events: none;
+        }
+
+        .os-interface > * { pointer-events: auto; }
+
+        .glass-panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(255, 0, 127, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* COLOR STRIPES */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink), var(--neon-gold));
+            background-size: 300% 100%;
+            animation: border-flow 4s linear infinite;
+        }
+
+        @keyframes border-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            gap: 15px;
+        }
+
+        .side-col { display: flex; flex-direction: column; gap: 15px; }
+
+        .core-deck {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(188, 19, 254, 0.1) 0%, transparent 70%);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+        }
+
+        .hologram-container {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin-bottom: 20px;
+        }
+
+        .cyber-heart-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px var(--neon-pink)) drop-shadow(0 0 40px var(--neon-purple));
+            animation: heart-pulse 1s infinite cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes heart-pulse {
+            0% { transform: scale(0.95); filter: hue-rotate(0deg) brightness(1); }
+            50% { transform: scale(1.1); filter: hue-rotate(45deg) brightness(1.3); }
+            100% { transform: scale(0.95); filter: hue-rotate(0deg) brightness(1); }
+        }
+
+        .main-title {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            text-align: center;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #fff, var(--neon-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+
+        .main-title span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--neon-gold);
+            font-family: var(--font-header);
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            -webkit-text-fill-color: var(--neon-gold);
+        }
+
+        .btn-group { display: flex; gap: 20px; }
+
+        .cyber-btn {
+            padding: 12px 35px;
+            font-family: var(--font-header);
+            font-weight: 900;
+            background: transparent;
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: 0.2s;
+            font-size: 0.8rem;
+            position: relative;
+        }
+
+        .cyber-btn:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 40px var(--neon-pink), 0 0 10px #fff;
+            transform: skew(-5deg);
+        }
+
+        .cyber-btn.decline {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+            font-size: 0.6rem;
+            opacity: 0.6;
+        }
+
+        .module-label {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--neon-blue);
+            padding: 6px 12px;
+            font-family: var(--font-header);
+            font-size: 0.55rem;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .module-body { padding: 12px; flex: 1; }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.65rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding-bottom: 3px;
+        }
+
+        .label { color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .val { color: var(--neon-blue); font-family: var(--font-code); }
+        .val.pink { color: var(--neon-pink); }
+        .val.gold { color: var(--neon-gold); }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 15px;
+        }
+
+        .terminal-box {
+            background: #000;
+            border: 1px solid var(--neon-purple);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .term-log {
+            flex: 1;
+            padding: 10px;
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            overflow-y: auto;
+            line-height: 1.4;
+            background: linear-gradient(0deg, rgba(188, 19, 254, 0.05) 0%, transparent 100%);
+        }
+
+        .term-input-row {
+            padding: 8px;
+            background: rgba(188, 19, 254, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .term-input-row input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            width: 100%;
+            outline: none;
+            font-family: var(--font-code);
+            padding-left: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* ANIMATED ASSETS */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            text-shadow: -1px 0 var(--neon-red);
+            top: 0;
+            background: var(--bg-deep);
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+            animation: noise-anim 2s infinite linear alternate-reverse;
+        }
+
+        @keyframes noise-anim {
+            0% { clip: rect(12px, 9999px, 94px, 0); }
+            100% { clip: rect(81px, 9999px, 32px, 0); }
+        }
+
+        .scrolling-hex {
+            font-family: var(--font-code);
+            font-size: 0.5rem;
+            color: rgba(0, 242, 255, 0.1);
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            text-align: right;
+            pointer-events: none;
+        }
+
+        .evasive { position: fixed !important; z-index: 10000; }
+
+        .status-pulse {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--neon-pink);
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 10px var(--neon-pink);
+            animation: pulse-glow 1s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .success-container {
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .success-title {
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 207, 16, 0.8), 0 0 40px rgba(255, 207, 16, 0.4); }
+            50% { text-shadow: 0 0 40px rgba(255, 207, 16, 1), 0 0 80px rgba(255, 207, 16, 0.6); }
+        }
+
+        .heart-burst {
+            position: absolute;
+            font-size: 3rem;
+            animation: burstUp 3s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes burstUp {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, rgba(255, 207, 16, 0.15) 0%, rgba(188, 19, 254, 0.15) 100%);
+            border: 2px solid var(--neon-gold);
+            border-radius: 10px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 60px rgba(255, 207, 16, 0.3), inset 0 0 30px rgba(255, 207, 16, 0.1);
+            animation: boxPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes boxPulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(255, 207, 16, 0.3), inset 0 0 30px rgba(255, 207, 16, 0.1); }
+            50% { box-shadow: 0 0 100px rgba(255, 207, 16, 0.5), inset 0 0 50px rgba(255, 207, 16, 0.2); }
+        }
+
+        .status-line {
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 242, 255, 0.05);
+            border-left: 3px solid var(--neon-blue);
+            border-radius: 5px;
+            animation: slideIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .status-line:nth-child(1) { animation-delay: 0.3s; }
+        .status-line:nth-child(2) { animation-delay: 0.5s; }
+        .status-line:nth-child(3) { animation-delay: 0.7s; }
+        .status-line:nth-child(4) { animation-delay: 0.9s; }
+        .status-line:nth-child(5) { animation-delay: 1.1s; }
+        .status-line:nth-child(6) { animation-delay: 1.3s; }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .love-message {
+            font-size: 1.2rem;
+            color: var(--neon-pink);
+            margin-top: 30px;
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--neon-pink);
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
+            75% { transform: scale(1.05); }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2rem;
+            animation: particleFloat 4s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .digital-heart {
+            display: inline-block;
+            font-size: 2.5rem;
+            animation: heartPulseCustom 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulseCustom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .confetti-burst {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--neon-gold);
+            animation: confettiFall 3s ease-in forwards;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(360deg); }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .success-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: rgba(0, 242, 255, 0.08);
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            animation: slideIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 1.5s; }
+        .stat-card:nth-child(2) { animation-delay: 1.7s; }
+        .stat-card:nth-child(3) { animation-delay: 1.9s; }
+        .stat-card:nth-child(4) { animation-delay: 2.1s; }
+
+        .stat-card-value {
+            font-size: 1.5rem;
+            color: var(--neon-gold);
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-gold);
+        }
+
+        .stat-card-label {
+            font-size: 0.6rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: var(--font-code);
+        }
+
+        .divider-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+            margin: 20px 0;
+            animation: slideIn 0.8s ease-out 1.3s forwards;
+            opacity: 0;
+        }
+
+        .message-box {
+            background: rgba(188, 19, 254, 0.1);
+            border-left: 4px solid var(--neon-purple);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--neon-blue);
+            animation: slideIn 0.8s ease-out 2.3s forwards;
+            opacity: 0;
+        }
+
+        .message-box span {
+            color: var(--neon-pink);
+            font-weight: bold;
+        }
+
+        .cyber-ring {
+            position: absolute;
+            border: 2px solid var(--neon-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: expandRing 2s ease-out forwards;
+        }
+
+        @keyframes expandRing {
+            0% { width: 50px; height: 50px; opacity: 0.8; }
+            100% { width: 300px; height: 300px; opacity: 0; }
+        }
+
+        .success-box {
+            position: relative;
+        }
+
+        .timer-display {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+            font-family: var(--font-code);
+        }
+
+        .timer-segment {
+            background: rgba(255, 207, 16, 0.1);
+            border: 1px solid var(--neon-gold);
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-align: center;
+            animation: slideIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .timer-segment:nth-child(1) { animation-delay: 0.5s; }
+        .timer-segment:nth-child(2) { animation-delay: 0.7s; }
+        .timer-segment:nth-child(3) { animation-delay: 0.9s; }
+
+        .timer-num {
+            font-size: 1.3rem;
+            color: var(--neon-gold);
+            font-weight: bold;
+        }
+
+        .timer-label {
+            font-size: 0.5rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+            animation: slideIn 0.8s ease-out 1.5s forwards;
+            opacity: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: var(--neon-blue);
+            font-size: 0.75rem;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "▸";
+            color: var(--neon-pink);
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+            .glow-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+        }
+
+        /* Sync-complete neon background canvas */
+        #sync-bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 9050; /* behind the success box (9100) but above most UI */
+            pointer-events: none;
+            mix-blend-mode: screen;
+            opacity: 0.95;
+        }
+
+        /* subtle scan beam overlay for extra cyberpunk vibe */
+        .sync-scan {
+            position: fixed; inset: 0; z-index: 9060; pointer-events: none;
+            background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.0) 100%);
+            mix-blend-mode: overlay;
+            opacity: 0.18;
+            transform: translateZ(0);
+            filter: blur(8px);
+        }
+
+        /* faint skyline silhouette to ground the scene */
+        .sync-skyline {
+            position: fixed; left: 0; right: 0; bottom: 0; height: 18vh; z-index: 9051; pointer-events: none;
+            background-repeat: repeat-x;
+            background-position: bottom center;
+            mix-blend-mode: screen;
+            opacity: 0.95;
+            filter: drop-shadow(0 10px 30px rgba(188,19,254,0.12));
+            background-image: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-overlay"></div>
+    <div class="scanlines"></div>
+    <canvas id="master-canvas"></canvas>
+
+    <div class="os-interface">
+        <header class="glass-panel header-bar">
+                <div style="display:flex; align-items:center;">
+                <div class="status-pulse"></div>
+                <span style="color:var(--neon-blue)">SYS_ACTIVE:</span> 
+                <span class="glitch-text" data-text="SYNDICATE_V12" data-glitch data-options="SYNDICATE_V12|SYND_V12|SYN-D12|SYNDICATE-GL1TCH" style="color:var(--neon-pink); margin-left:10px;">SYNDICATE_V12</span>
+            </div>
+            <div id="os-clock" style="color:var(--neon-gold); font-family:var(--font-code); font-weight: bold; letter-spacing: 2px;">00:00:00:000</div>
+            <div style="font-size: 0.6rem;">
+                <span style="color:var(--neon-purple)">NODE_LOCKED:</span>
+                <span style="color:#fff">JORDAN_7712</span>
+            </div>
+        </header>
+
+        <main class="content-grid">
+            <aside class="side-col">
+                <section class="glass-panel">
+                    <div class="module-label"><span>USER_BIO_METRICS</span> <span>[ENCRYPTED]</span></div>
+                    <div class="module-body">
+                        <div class="data-row"><span class="label">IDENTITY</span> <span class="val pink">JORDAN_VALENTINE</span></div>
+                        <div class="data-row"><span class="label">CLASS</span> <span class="val">CORE_DYNAMO</span></div>
+                        <div class="data-row"><span class="label">SYNC_LEVEL</span> <span class="val gold">99.99%</span></div>
+                        <div class="data-row"><span class="label">LOCATION</span> <span class="val">CAPE_TOWN_ZAF</span></div>
+                        <div class="data-row"><span class="label">THREAT_LVL</span> <span class="val" style="color:var(--neon-red)">ZERO</span></div>
+                    </div>
+                </section>
+
+                <section class="glass-panel" style="flex:1">
+                    <div class="module-label"><span>NEURAL_UPLINK_FLUX</span></div>
+                    <div class="module-body">
+                        <div class="data-row"><span class="label">AFFECTION</span> <div style="width:100px; height:8px; background:#111; margin-left:10px; border:1px solid #333;"><div style="width:100%; height:100%; background:var(--neon-pink); box-shadow:0 0 10px var(--neon-pink)"></div></div></div>
+                        <div class="data-row"><span class="label">DEDICATION</span> <span class="val">MAX_CAPACITY</span></div>
+                        <div class="data-row"><span class="label">SYNC_ID</span> <span class="val">JV_M_LOCKED_FOREVER</span></div>
+                        <div style="margin-top: 25px; border-left: 2px solid var(--neon-purple); padding-left: 10px;">
+                            <span class="label" style="font-size: 0.5rem; display: block; margin-bottom: 5px;">CARDIAC_ENCRYPTION_WAVE</span>
+                            <canvas id="heart-pulse-wave" height="50" style="width:100%"></canvas>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.55rem; color: var(--neon-gold); font-family: var(--font-code);">
+                            <div data-glitch data-options=">> DETECTING_SMILE_PROBABILITY: 100%|>> DETECTING_SMILE_PROBABILITY: 87%|>> DETECTING_SMILE_PROBABILITY: 100% glitched|>> DETECTING_SMILE_PROBABILITY: ░░%" id="smile-prob">&gt;&gt; DETECTING_SMILE_PROBABILITY: 100%</div>
+                            <div data-glitch data-options=">> ANALYSIS: SHE_IS_GORGEOUS|>> ANALYSIS: OBJECTIVE_BIASED|>> ANALYSIS: LOVE_OVERCLOCKED|>> ANALYSIS: ERROR_0x❤️" id="analysis">&gt;&gt; ANALYSIS: SHE_IS_GORGEOUS</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass-panel">
+                    <div class="module-label"><span>LOGISTICS_NODE</span></div>
+                    <div class="module-body">
+                        <div class="data-row"><span class="label">OBJ_ETA</span> <span class="val">FEB_14_2026</span></div>
+                        <div class="data-row"><span class="label">ALT_ETA</span> <span class="val gold">CCMA_TRIGGER_ON</span></div>
+                        <div class="data-row"><span class="label">STATUS</span> <span class="val" id="case-status">STANDBY</span></div>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="glass-panel core-deck">
+                <div class="scrolling-hex" id="hex-bg"></div>
+                <div class="hologram-container">
+                    <svg class="cyber-heart-svg" viewBox="0 0 32 32">
+                        <defs>
+                            <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--neon-pink);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--neon-purple);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#heartGrad)" d="M16 28.5L14.1 26.6C7.2 20.4 3 16.5 3 11.5 3 7.4 6.4 4 10.5 4c2.3 0 4.5 1.1 5.5 2.8 1.1-1.7 3.2-2.8 5.5-2.8 4.1 0 7.5 3.4 7.5 7.5 0 5-4.2 8.9-11.1 15.1L16 28.5z"/>
+                    </svg>
+                </div>
+                
+                <div class="main-title">
+                    <span class="glitch-text" data-text="INIT_ROMANCE_PROTOCOL_V12">INIT_ROMANCE_PROTOCOL_V12</span>
+                    JORDAN, WILL YOU BE<br>MY VALENTINE?
+                </div>
+
+                <div class="btn-group">
+                    <button class="cyber-btn" id="yes-btn">AUTHORIZE</button>
+                    <button class="cyber-btn decline" id="no-btn">DECLINE</button>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <div style="font-family: var(--font-header); font-size: 0.5rem; color: var(--neon-blue); letter-spacing: 4px; margin-bottom: 5px;">COUNTDOWN_TO_DEPLOYMENT</div>
+                    <div id="ccma-timer" style="font-size: 2.2rem; font-family: var(--font-header); color: #fff; text-shadow: 0 0 15px var(--neon-blue);">00:00:00:00</div>
+                </div>
+            </section>
+
+            <aside class="side-col">
+                <section class="glass-panel" style="flex: 1.5">
+                    <div class="module-label"><span>NEURAL_MAPPING_VIZ</span></div>
+                    <div class="module-body" style="padding: 0; position: relative; overflow: hidden; background: #000;">
+                        <canvas id="neural-canvas" style="width:100%; height:100%"></canvas>
+                        <div style="position: absolute; top: 10px; right: 10px; font-family: var(--font-code); font-size: 0.5rem; color: var(--neon-pink);">
+                            [LIVE_FEED_SECURE]
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass-panel" style="flex: 1">
+                    <div class="module-label"><span>REASONING_ENGINE</span></div>
+                    <div class="module-body">
+                        <div class="data-row"><span class="label">LOGIC_GATE_1</span> <span class="val">SHE_PRETTY</span></div>
+                        <div class="data-row"><span class="label">LOGIC_GATE_2</span> <span class="val">I_MISS_HER</span></div>
+                        <div class="data-row"><span class="label">LOGIC_GATE_3</span> <span class="val gold">FEB_14_LOCKED</span></div>
+                        <div style="margin-top: 15px; border: 1px solid var(--neon-blue); background: rgba(0, 242, 255, 0.05); padding: 8px; font-size: 0.6rem; color: var(--neon-blue); font-family: var(--font-code);">
+                            <span data-glitch data-options='Matthew’s logic dictates that Jordan is the only variable that matters.|Matthew’s logic: JORDAN > ALL|LOGIC_ERR: HEART_OVERRIDE'>Matthew’s logic dictates that Jordan is the only variable that matters.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass-panel">
+                    <div class="module-label"><span>SYSTEM_HARMONIC</span></div>
+                    <div class="module-body" style="padding: 10px;">
+                        <canvas id="sync-wave" height="60" style="width:100%"></canvas>
+                    </div>
+                </section>
+            </aside>
+        </main>
+
+        <footer class="footer-grid">
+            <div class="glass-panel terminal-box">
+                <div class="module-label" style="display:flex; justify-content:space-between; align-items:center;"><div><span>OBJECTION_HANDLER_RELAY</span> <span>ENC_V3</span></div><button id="love-note-btn" class="cyber-btn" style="padding:6px 10px; font-size:0.6rem; border-color:var(--neon-gold); color:var(--neon-gold); margin:0;">REQUEST LOVE NOTE</button></div>
+                <div class="term-log" id="term-out">
+                    [SYSTEM] Terminal v12.0.4 - Jordan Access Granted.
+                    <br>[LOG] Detecting high affection signals.
+                    <br>[LOG] Matthew arrival confirmed for Feb 14. 
+                    <br>[LOG] Status update: "Missing her has reached peak levels."
+                    <br>[UPLINK] If CCMA case concludes in victory, deployment date advances.
+                    <br>[SYSTEM] Awaiting your response, Jordan...
+                </div>
+                <div class="term-input-row">
+                    <span style="color:var(--neon-blue); font-family:var(--font-code); margin-right: 10px; font-weight: bold;">JORDAN_RELAY></span>
+                    <input type="text" id="term-in" placeholder="Type objection or counter-argument..." autocomplete="off">
+                </div>
+            </div>
+            
+            <section class="glass-panel" style="background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), transparent);">
+                <div class="module-label"><span>MISSION_GLOBAL</span></div>
+                    <div class="module-body">
+                    <div class="data-row"><span class="label">PRIORITY</span> <span class="val pink" data-glitch data-options="OMEGA|OM3GA|ΩMEGA">OMEGA</span></div>
+                    <div class="data-row"><span class="label">TARGET</span> <span class="val" data-glitch data-options="BE_HER_VALENTINE|BE_HER_SOON|BE_SINGLE_TARGET">BE_HER_VALENTINE</span></div>
+                    <div class="data-row"><span class="label">CHANCES</span> <span class="val gold" data-glitch data-options="100%_CERTAIN|99.9%_FLUCT|CERTAINTY: 100%">100%_CERTAIN</span></div>
+                    <div style="font-family: var(--font-code); font-size: 0.5rem; color: #fff; margin-top: 10px; opacity: 0.5;">
+                        TIMESTAMP: 2026.02.14.00.00.01<br>
+                        COORDS: -33.9249, 18.4241
+                    </div>
+                </div>
+            </section>
+        </footer>
+    </div>
+
+    <div id="auth-success" style="position:fixed; inset:0; background:#000; z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:flex-start; overflow-y: auto; overflow-x: hidden; padding: 60px 20px 40px 20px;">
+        <canvas id="sync-bg-canvas"></canvas>
+        <div class="sync-scan"></div>
+        <div class="sync-skyline"></div>
+        <div class="success-box success-container" style="max-width: 700px; width: 100%; margin: 0 auto; position: relative; z-index: 9100;">
+            <h1 class="success-title glow-text" style="font-size: 4rem; -webkit-text-fill-color: var(--neon-gold); margin-bottom: 5px; margin-top: 0;">SYNC_COMPLETE</h1>
+            <p style="font-family: var(--font-header); letter-spacing: 15px; color: var(--neon-pink); margin-bottom: 25px; font-size: 1rem; text-shadow: 0 0 10px var(--neon-pink);">VALENTINE STATUS: LOCKED</p>
+            
+            <div class="divider-line"></div>
+
+            <div style="font-family: var(--font-code); font-size: 0.9rem; line-height: 2; color: var(--neon-blue); text-align: left; margin: 20px 0;">
+                <div class="status-line" style="border-left-color: var(--neon-gold); background: rgba(255, 207, 16, 0.05);">
+                    <span style="color: var(--neon-gold);">>> VALENTINE_PROTOCOL: ACTIVATED</span>
+                </div>
+                <div class="status-line">
+                    <span style="color: var(--neon-pink);">>> MATTHEW + JORDAN: TRUE</span>
+                </div>
+                <div class="status-line">
+                    <span style="color: var(--neon-blue);">>> HEARTS_SYNCED: 100%</span>
+                </div>
+                <div class="status-line" style="border-left-color: var(--neon-gold);">
+                    <span style="color: var(--neon-gold);">>> DATE: FEB 14 (OR SOONER)</span>
+                </div>
+                <div class="status-line">
+                    <span style="color: var(--neon-purple);">>> MISSION: HAPPINESS_INITIALIZED</span>
+                </div>
+                <div class="status-line" style="border-left-color: var(--neon-pink);">
+                    <span style="color: var(--neon-pink);">>> FOREVER_LOCKED_IN</span>
+                </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            <div class="love-message">
+                <span class="digital-heart">❤️</span> I LOVE YOU SO MUCH <span class="digital-heart">❤️</span>
+            </div>
+
+            <div style="font-family: var(--font-code); font-size: 0.8rem; color: var(--neon-gold); margin-top: 20px; text-align: center; letter-spacing: 1px;">
+                YOU JUST MADE ME THE HAPPIEST PERSON ALIVE
+            </div>
+
+            <div class="success-grid">
+                <div class="stat-card">
+                    <div class="stat-card-value">∞</div>
+                    <div class="stat-card-label">Love_Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">100%</div>
+                    <div class="stat-card-label">Heart_Sync</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">YES!</div>
+                    <div class="stat-card-label">Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">💯</div>
+                    <div class="stat-card-label">Victory</div>
+                </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="font-family: var(--font-header); font-size: 0.75rem; color: var(--neon-blue); letter-spacing: 2px; margin-bottom: 12px;">DEPLOYMENT TIMELINE</p>
+                <div class="timer-display">
+                    <div class="timer-segment">
+                        <div class="timer-num">11</div>
+                        <div class="timer-label">DAYS</div>
+                    </div>
+                    <div class="timer-segment">
+                        <div class="timer-num">←</div>
+                        <div class="timer-label">UNTIL</div>
+                    </div>
+                    <div class="timer-segment">
+                        <div class="timer-num">❤️</div>
+                        <div class="timer-label">DAY</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="message-box">
+                >> <span>PROTOCOL_STATUS:</span> All systems engaged. You've just unlocked the ultimate love achievement. This is the beginning of something truly special, and I couldn't be more ready to make every moment count. Let's make Feb 14 unforgettable.
+            </div>
+
+            <ul class="feature-list">
+                <li>EXCLUSIVE_ACCESS: All love features unlocked</li>
+                <li>PRIORITY_MODE: You now have my complete attention</li>
+                <li>FOREVER_GUARANTEE: No expiration date on this love</li>
+                <li>MEMORY_BUFFER: Every moment with you matters</li>
+                <li>COMMITMENT_LOCKED: This decision is hardcoded</li>
+            </ul>
+
+            <div class="divider-line"></div>
+
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="cyber-btn" style="border-color: var(--neon-gold); color: var(--neon-gold); padding: 12px 30px; font-size: 0.75rem;" onclick="location.reload()">RETURN_TO_OS</button>
+                <button class="cyber-btn" style="border-color: var(--neon-pink); color: var(--neon-pink); padding: 12px 30px; font-size: 0.75rem;" onclick="document.getElementById('auth-success').style.display='none'; document.querySelector('.os-interface').style.display='grid'; stopSyncBG();">KEEP_CHATTING</button>
+                <button class="cyber-btn" style="border-color: var(--neon-purple); color: var(--neon-purple); padding: 12px 30px; font-size: 0.75rem;" id="save-forever-btn">SAVE_FOREVER</button>
+            </div>
+
+            <div style="margin-top: 25px; font-size: 0.65rem; color: rgba(0, 242, 255, 0.5); text-align: center; font-family: var(--font-code);">
+                [SYSTEM] Session locked and secured. // Matthew's love protocol v1.0.0 // ©2026
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const apiKey = "AIzaSyCP8-dPU_GUz2YhtAtaV4rSwaqLu6LCcr0";
+            let canvas, ctx, nCanvas, nCtx;
+            let w, h;
+            let nodes = [];
+            let drops = [];
+            const fontSize = 20;
+            let neonBlue = '#00f2ff';
+            let neonPink = '#ff007f';
+            // sync background canvas globals
+            let syncBgCanvas, syncBgCtx, syncBgRAF = null;
+            let syncOffset = 0;
+
+            // Attempt to use a local Ollama instance (no API key needed).
+            // If Ollama isn't reachable, code will fall back to Gemini.
+            async function ollamaGenerate(prompt, opts = {}) {
+                const model = opts.model || 'mistral';
+                const temperature = typeof opts.temperature === 'number' ? opts.temperature : 0.7;
+                const max_tokens = opts.max_tokens || 120;
+
+                const endpoints = [
+                    'http://localhost:11434/api/generate',
+                    'http://127.0.0.1:11434/api/generate'
+                ];
+
+                for (const url of endpoints) {
+                    try {
+                        const res = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ model, prompt, temperature, max_tokens })
+                        });
+
+                        if (res.ok) {
+                            // Handle streaming JSON lines
+                            const reader = res.body.getReader();
+                            let decoder = new TextDecoder();
+                            let result = '';
+                            let done = false;
+                            let buffer = '';
+                            while (!done) {
+                                const { value, done: streamDone } = await reader.read();
+                                if (value) {
+                                    buffer += decoder.decode(value, { stream: true });
+                                    let lines = buffer.split('\n');
+                                    buffer = lines.pop(); // last line may be incomplete
+                                    for (const line of lines) {
+                                        if (!line.trim()) continue;
+                                        try {
+                                            const obj = JSON.parse(line);
+                                            if (typeof obj.response === 'string') result += obj.response;
+                                        } catch (e) {
+                                            // ignore parse errors
+                                        }
+                                    }
+                                }
+                                done = streamDone;
+                            }
+                            // handle any remaining buffer
+                            if (buffer.trim()) {
+                                try {
+                                    const obj = JSON.parse(buffer);
+                                    if (typeof obj.response === 'string') result += obj.response;
+                                } catch (e) {}
+                            }
+                            return result.trim();
+                        }
+                    } catch (e) {
+                        // try next endpoint
+                    }
+                }
+
+                // If Ollama wasn't reachable, throw so callers can fall back
+                throw new Error('Ollama not reachable');
+            }
+            function start() {
+                canvas = document.getElementById('master-canvas');
+                ctx = canvas.getContext('2d');
+                nCanvas = document.getElementById('neural-canvas');
+                nCtx = nCanvas.getContext('2d');
+                // read color variables from CSS so canvas uses the same neon palette
+                try {
+                    const styles = getComputedStyle(document.documentElement);
+                    neonBlue = styles.getPropertyValue('--neon-blue').trim() || neonBlue;
+                    neonPink = styles.getPropertyValue('--neon-pink').trim() || neonPink;
+                } catch (e) {}
+                
+                resize();
+                drops = Array(Math.ceil(window.innerWidth / fontSize)).fill(1);
+                
+                setInterval(drawBG, 50);
+                drawNeural();
+                setInterval(updateUI, 100);
+                initGlitches();
+                drawWave();
+                drawHeartPulse();
+                generateHex();
+            }
+
+            function resize() {
+                if (!canvas) return;
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                initNeural();
+                // also resize the sync background canvas
+                initSyncBG();
+            }
+            window.addEventListener('resize', resize);
+
+            // heart-only rain (uses emoji / glyphs)
+            const chars = "❤💖💜💙💘💕❣️";
+            function drawBG() {
+                if (!ctx) return;
+                ctx.fillStyle = "rgba(2, 2, 5, 0.15)";
+                ctx.fillRect(0, 0, w, h);
+                
+                ctx.font = fontSize + "px 'JetBrains Mono', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+                drops.forEach((y, i) => {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillStyle = Math.random() > 0.95 ? neonBlue : neonPink;
+                    ctx.globalAlpha = Math.random();
+                    ctx.fillText(text, i * fontSize, y * fontSize);
+                    if (y * fontSize > h && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                });
+                ctx.globalAlpha = 1;
+            }
+
+            function initNeural() {
+                if (!nCanvas) return;
+                nCanvas.width = nCanvas.offsetWidth;
+                nCanvas.height = nCanvas.offsetHeight;
+                nodes = [];
+                for(let i=0; i<40; i++) {
+                    nodes.push({
+                        x: Math.random() * nCanvas.width,
+                        y: Math.random() * nCanvas.height,
+                        vx: (Math.random() - 0.5) * 1.5,
+                        vy: (Math.random() - 0.5) * 1.5
+                    });
+                }
+            }
+
+            function drawNeural() {
+                if (!nCtx || !nCanvas) { requestAnimationFrame(drawNeural); return; }
+                nCtx.fillStyle = '#000';
+                nCtx.fillRect(0, 0, nCanvas.width, nCanvas.height);
+                
+                nodes.forEach((node, i) => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    if(node.x < 0 || node.x > nCanvas.width) node.vx *= -1;
+                    if(node.y < 0 || node.y > nCanvas.height) node.vy *= -1;
+                    
+                    nodes.forEach((node2, j) => {
+                        if(i === j) return;
+                        const dist = Math.hypot(node.x - node2.x, node.y - node2.y);
+                        if(dist < 70) {
+                            nCtx.strokeStyle = `rgba(188, 19, 254, ${1 - dist/70})`;
+                            nCtx.beginPath();
+                            nCtx.moveTo(node.x, node.y);
+                            nCtx.lineTo(node2.x, node2.y);
+                            nCtx.stroke();
+                        }
+                    });
+                });
+                nCtx.fillStyle = 'var(--neon-blue)';
+                nodes.forEach(n => {
+                    nCtx.beginPath();
+                    nCtx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+                    nCtx.fill();
+                });
+                requestAnimationFrame(drawNeural);
+            }
+
+            function generateHex() {
+                const el = document.getElementById('hex-bg');
+                if(!el) return;
+                let text = "";
+                for(let i=0; i<500; i++) {
+                    text += Math.floor(Math.random()*16).toString(16).toUpperCase() + (i%20==0 ? "<br>" : " ");
+                }
+                el.innerHTML = text;
+                setTimeout(generateHex, 100);
+            }
+
+            // Generic glitcher for text elements marked with `data-glitch`
+            function initGlitches() {
+                const els = Array.from(document.querySelectorAll('[data-glitch]'));
+                els.forEach(el => {
+                    const raw = el.getAttribute('data-options') || el.innerText || el.textContent || '';
+                    el._glitchOpts = raw.split('|').map(s => s.trim()).filter(Boolean);
+                    // preserve initial color
+                    el._initialColor = el.style.color || '';
+                });
+
+                setInterval(() => {
+                    els.forEach(el => {
+                        const opts = el._glitchOpts && el._glitchOpts.length ? el._glitchOpts : [el.innerText];
+                        // choose normal or glitch variant
+                        const pick = opts[Math.floor(Math.random() * opts.length)];
+                        // small chance to show a corrupted slice
+                        if (Math.random() < 0.12) {
+                            // create a glitched substring by inserting random underscores and casing
+                            const chars = pick.split('');
+                            for (let i = 0; i < chars.length; i++) {
+                                if (Math.random() < 0.12) chars[i] = (Math.random() > 0.5 ? '_' : '\u2592');
+                                if (Math.random() < 0.06) chars[i] = chars[i].toUpperCase();
+                            }
+                            el.textContent = chars.join('');
+                        } else {
+                            el.textContent = pick;
+                        }
+
+                        // occasional color flicker using neon palette if available
+                        if (Math.random() > 0.7) {
+                            el.style.color = Math.random() > 0.5 ? neonPink : neonBlue;
+                        } else {
+                            el.style.color = el._initialColor || '';
+                        }
+                    });
+                }, 800 + Math.random() * 600);
+            }
+
+            const targetDate = new Date("February 14, 2026 00:00:00").getTime();
+            function updateUI() {
+                const clockEl = document.getElementById('os-clock');
+                const ccmaEl = document.getElementById('ccma-timer');
+                const cStatus = document.getElementById('case-status');
+                
+                const now = new Date();
+                clockEl.innerText = now.toLocaleTimeString() + ':' + now.getMilliseconds().toString().padStart(3, '0');
+                
+                const diff = targetDate - now.getTime();
+                if(diff > 0) {
+                    const d = Math.floor(diff / 86400000);
+                    const h = Math.floor((diff % 86400000) / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
+                    const s = Math.floor((diff % 60000) / 1000);
+                    ccmaEl.innerText = `${d.toString().padStart(2, '0')}:${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+                if (cStatus) {
+                    cStatus.innerText = Math.random() > 0.3 ? "OPTIMIZING_ARRIVAL" : "CALCULATING_MISS_YOU_LEVELS";
+                    cStatus.style.color = Math.random() > 0.5 ? 'var(--neon-gold)' : 'var(--neon-blue)';
+                }
+            }
+
+            async function generateLoveNote() {
+                const tOut = document.getElementById('term-out');
+                if (!tOut) return;
+
+                if (!apiKey) {
+                    const info = document.createElement('div');
+                    info.style.color = 'var(--neon-gold)';
+                    info.style.marginBottom = '6px';
+                    info.style.fontSize = '0.65rem';
+                    info.innerHTML = '[INFO] Gemini API key not configured — attempting local Ollama if available.';
+                    tOut.appendChild(info);
+                    tOut.scrollTop = tOut.scrollHeight;
+                }
+
+                const genBtn = document.getElementById('love-note-btn');
+                if (genBtn) genBtn.disabled = true;
+
+                const log = document.createElement('div');
+                log.style.color = 'var(--neon-blue)';
+                log.style.marginBottom = '5px';
+                log.innerHTML = '[SYSTEM] Transmitting love declaration...';
+                tOut.appendChild(log);
+                tOut.scrollTop = tOut.scrollHeight;
+
+                try {
+                    let loveNote = null;
+                    // try local Ollama first
+                    try {
+                        loveNote = await ollamaGenerate('Write a short, heartfelt, and romantic love note from Matthew to Jordan. Keep it cyberpunk-themed, sweet, and personal. Make it 2-3 sentences maximum.', { model: 'mistral', max_tokens: 120 });
+                    } catch (ollamaErr) {
+                        // Ollama not available; fall back to Gemini
+                    }
+
+                    if (!loveNote) {
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: 'Write a short, heartfelt, and romantic love note from Matthew to Jordan. Keep it cyberpunk-themed, sweet, and personal. Make it 2-3 sentences maximum.' }] }]
+                            })
+                        });
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            const errMsg = document.createElement('div');
+                            errMsg.style.color = 'var(--neon-red)';
+                            errMsg.style.marginBottom = '10px';
+                            errMsg.style.fontSize = '0.65rem';
+                            errMsg.innerHTML = `[ERROR] API ${response.status}: ${data.error?.message || 'Unknown error'}`;
+                            tOut.appendChild(errMsg);
+                            tOut.scrollTop = tOut.scrollHeight;
+                            if (genBtn) genBtn.disabled = false;
+                            return;
+                        }
+
+                        loveNote = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Love note generation failed.';
+                    }
+                    const noteMsg = document.createElement('div');
+                    noteMsg.style.color = 'var(--neon-pink)';
+                    noteMsg.style.marginBottom = '10px';
+                    noteMsg.style.borderLeft = '2px solid var(--neon-pink)';
+                    noteMsg.style.paddingLeft = '10px';
+                    noteMsg.innerHTML = `[MATTHEW] > ${loveNote}`;
+                    tOut.appendChild(noteMsg);
+                    tOut.scrollTop = tOut.scrollHeight;
+                } catch(e) {
+                    const err = document.createElement('div');
+                    err.style.color = 'var(--neon-red)';
+                    err.style.marginBottom = '10px';
+                    err.innerHTML = `[ERROR] ${e.message}`;
+                    tOut.appendChild(err);
+                    tOut.scrollTop = tOut.scrollHeight;
+                } finally {
+                    if (genBtn) genBtn.disabled = false;
+                }
+            }
+
+            async function processResponse() {
+                const tIn = document.getElementById('term-in');
+                const tOut = document.getElementById('term-out');
+                if (!tIn || !tOut) return;
+
+                const val = tIn.value.trim();
+                if(!val) return;
+                
+                const userMsg = document.createElement('div');
+                userMsg.style.color = 'var(--neon-pink)';
+                userMsg.style.borderLeft = "3px solid var(--neon-pink)";
+                userMsg.style.paddingLeft = "10px";
+                userMsg.style.marginBottom = "8px";
+                userMsg.style.fontWeight = "bold";
+                userMsg.style.textShadow = "0 0 10px var(--neon-pink), 0 0 20px var(--neon-purple)";
+                userMsg.style.letterSpacing = "0.5px";
+                userMsg.innerHTML = `[JORDAN] > ${val}`;
+                userMsg.className = 'glitch-text';
+                userMsg.setAttribute('data-text', `[JORDAN] > ${val}`);
+                userMsg.setAttribute('data-glitch', 'true');
+                userMsg.setAttribute('data-options', `[JORDAN] > ${val}|[J0RDAN] > ${val}|[JOR-DAN] > ${val}|[JO█DAN] > ${val}|[JORDAN▓▓] > ${val}`);
+                tOut.appendChild(userMsg);
+                tIn.value = '';
+                tIn.disabled = true;
+
+                let reply = "UPLINK_ERROR: Matthew's affection levels are so high they have created a firewall against your objections. You are being redirected to 'Yes'.";
+                
+                if(apiKey) {
+                    try {
+                        let remoteReply = null;
+                        const prompt = `Jordan says: "${val}". 
+Respond as Matthew in a witty, direct rebuttal. 
+She is debating why she shouldn't be your Valentine, don't let her win no matter what she says, make it impossible for her to  say no. tell her why she ahs to be my valentine and why she cant say no.
+Be charming, slightly stubborn, and use 1-2 subtle tech nods (like 'override', 'glitch', or 'locked in'). 
+STRICT RULES: 
+1. Speak in the first person ("I", "my"). 
+2. NO cringy, over-the-top AI talk. 
+3. Keep it to one short, punchy sentence. 
+4. Sound like a real person, not a bot.`;
+
+                        // try Ollama locally first
+                        try {
+                            remoteReply = await ollamaGenerate(prompt, { model: 'mistral', max_tokens: 120, temperature: 0.6 });
+                        } catch (ollamaErr) {
+                            // fall back to Gemini
+                        }
+
+                        if (!remoteReply) {
+                            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: prompt }] }]
+                                })
+                            });
+                            const data = await response.json();
+
+                            if (!response.ok) {
+                                reply = `[ERROR] API ${response.status}: ${data.error?.message || 'Request failed'}`;
+                                const errMsg = document.createElement('div');
+                                errMsg.style.color = 'var(--neon-red)';
+                                errMsg.style.marginBottom = "10px";
+                                errMsg.style.fontSize = '0.65rem';
+                                errMsg.innerHTML = reply;
+                                tOut.appendChild(errMsg);
+                                tOut.scrollTop = tOut.scrollHeight;
+                                tIn.disabled = false;
+                                return;
+                            }
+
+                            remoteReply = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+                        }
+
+                        if (remoteReply) reply = remoteReply;
+                    } catch(e) {
+                        reply = `[ERROR] ${e.message}`;
+                    }
+                }
+
+                const aiMsg = document.createElement('div');
+                aiMsg.style.color = 'var(--neon-pink)';
+                aiMsg.style.marginBottom = "10px";
+                aiMsg.innerHTML = `[OS_SYNC] > ${reply}`;
+                tOut.appendChild(aiMsg);
+                tOut.scrollTop = tOut.scrollHeight;
+                tIn.disabled = false;
+            }
+
+            let offset = 0;
+            function drawWave() {
+                const wave = document.getElementById('sync-wave');
+                if (!wave) return;
+                const wctx = wave.getContext('2d');
+                wctx.clearRect(0, 0, wave.width, wave.height);
+                wctx.strokeStyle = '#bc13fe';
+                wctx.lineWidth = 2;
+                wctx.beginPath();
+                for(let x=0; x<wave.width; x++) {
+                    const y = 30 + Math.sin(x * 0.05 + offset) * 10 + Math.cos(x * 0.1 - offset) * 5;
+                    if(x === 0) wctx.moveTo(x, y); else wctx.lineTo(x, y);
+                }
+                wctx.stroke();
+                offset += 0.1;
+                requestAnimationFrame(drawWave);
+            }
+
+            let hOffset = 0;
+            function drawHeartPulse() {
+                const wave = document.getElementById('heart-pulse-wave');
+                if (!wave) return;
+                const wctx = wave.getContext('2d');
+                wctx.clearRect(0, 0, wave.width, wave.height);
+                wctx.strokeStyle = '#00f2ff';
+                wctx.lineWidth = 2;
+                wctx.beginPath();
+                for(let x=0; x<wave.width; x++) {
+                    let y = 25;
+                    if ((x + hOffset) % 120 < 15) {
+                        const p = (x + hOffset) % 120;
+                        y = 25 - Math.sin(p * 0.4) * 20;
+                    }
+                    if(x === 0) wctx.moveTo(x, y); else wctx.lineTo(x, y);
+                }
+                wctx.stroke();
+                hOffset += 3;
+                requestAnimationFrame(drawHeartPulse);
+            }
+
+            function saveLoveCommitment() {
+                console.log('saveLoveCommitment called');
+                
+                const timestamp = new Date().toISOString();
+                const commitment = {
+                    from: 'MATTHEW',
+                    to: 'JORDAN',
+                    message: 'I LOVE YOU SO MUCH',
+                    timestamp: timestamp,
+                    location: 'CAPE_TOWN_ZAF',
+                    status: 'FOREVER_LOCKED_IN',
+                    commitment_type: 'VALENTINE_PROTOCOL_ACTIVATED'
+                };
+
+                // Save to localStorage
+                try {
+                    localStorage.setItem('jordan_love_commitment', JSON.stringify(commitment));
+                    console.log('Saved to localStorage successfully');
+                } catch(e) {
+                    console.error('Failed to save to localStorage:', e);
+                }
+
+                // Button flash effect - visible on success page
+                const btn = document.getElementById('save-forever-btn');
+                console.log('Button element:', btn);
+                
+                if (btn) {
+                    btn.style.boxShadow = '0 0 30px var(--neon-purple), 0 0 60px var(--neon-pink)';
+                    btn.style.color = 'var(--neon-gold)';
+                    btn.style.transform = 'scale(1.1)';
+                    console.log('Applied button glow effect');
+                    
+                    setTimeout(() => {
+                        btn.style.color = 'var(--neon-purple)';
+                        btn.style.boxShadow = '';
+                        btn.style.transform = 'scale(1)';
+                        console.log('Removed button glow effect');
+                    }, 1500);
+                }
+                
+                // Show alert on success page
+                alert('✓ COMMITMENT LOCKED IN FOREVER ✓\n\n❤️ Your love protocol has been saved and is now permanent ❤️');
+            }
+
+            function triggerParticles() {
+                const hearts = ['❤️', '💖', '💗', '💝', '💕', '💓'];
+                const successBox = document.querySelector('.success-box');
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+
+                // Screen shake effect
+                const osInterface = document.querySelector('.os-interface');
+                if (osInterface) {
+                    for (let shake = 0; shake < 8; shake++) {
+                        setTimeout(() => {
+                            osInterface.style.transform = `translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px)`;
+                        }, shake * 100);
+                    }
+                    setTimeout(() => {
+                        osInterface.style.transform = 'translate(0, 0)';
+                    }, 800);
+                }
+
+                // Create expanding glowing rings
+                for (let ring = 0; ring < 3; ring++) {
+                    setTimeout(() => {
+                        const ringEl = document.createElement('div');
+                        ringEl.style.cssText = `
+                            position: fixed;
+                            left: ${centerX}px;
+                            top: ${centerY}px;
+                            width: 50px;
+                            height: 50px;
+                            border: 3px solid ${['var(--neon-pink)', 'var(--neon-purple)', 'var(--neon-gold)'][ring % 3]};
+                            border-radius: 50%;
+                            pointer-events: none;
+                            z-index: 8900;
+                            animation: expandRing 2s ease-out forwards;
+                        `;
+                        document.body.appendChild(ringEl);
+                        setTimeout(() => ringEl.remove(), 2000);
+                    }, ring * 200);
+                }
+
+                // First burst of heart particles
+                for (let i = 0; i < 40; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'heart-burst';
+                    particle.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                    particle.style.left = centerX + 'px';
+                    particle.style.top = centerY + 'px';
+                    particle.style.fontSize = (2 + Math.random() * 2) + 'rem';
+                    
+                    const angle = (i / 40) * Math.PI * 2;
+                    const velocity = 150 + Math.random() * 250;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity;
+                    
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--ty', ty + 'px');
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 3500);
+                }
+
+                setTimeout(() => {
+                    for (let i = 0; i < 35; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'heart-burst';
+                        particle.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                        particle.style.left = centerX + 'px';
+                        particle.style.top = centerY + 'px';
+                        particle.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+                        
+                        const angle = (i / 35) * Math.PI * 2 + (Math.PI / 35);
+                        const velocity = 120 + Math.random() * 200;
+                        const tx = Math.cos(angle) * velocity;
+                        const ty = Math.sin(angle) * velocity;
+                        
+                        particle.style.setProperty('--tx', tx + 'px');
+                        particle.style.setProperty('--ty', ty + 'px');
+                        
+                        document.body.appendChild(particle);
+                        setTimeout(() => particle.remove(), 3000);
+                    }
+                }, 400);
+
+                for (let i = 0; i < 80; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti-burst';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-10px';
+                    confetti.style.width = (5 + Math.random() * 15) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.background = [
+                        'var(--neon-pink)',
+                        'var(--neon-purple)',
+                        'var(--neon-gold)',
+                        'var(--neon-blue)',
+                        'var(--neon-red)'
+                    ][Math.floor(Math.random() * 5)];
+                    confetti.style.animation = `confettiFall ${2.5 + Math.random() * 2.5}s ease-in forwards`;
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 5000);
+                }
+
+
+
+                // Flash the success box
+                if (successBox) {
+                    for (let flash = 0; flash < 4; flash++) {
+                        setTimeout(() => {
+                            successBox.style.boxShadow = flash % 2 === 0 
+                                ? '0 0 100px rgba(255, 207, 16, 0.8), inset 0 0 50px rgba(255, 207, 16, 0.3)' 
+                                : '0 0 60px rgba(255, 207, 16, 0.3), inset 0 0 30px rgba(255, 207, 16, 0.1)';
+                        }, flash * 150);
+                    }
+                }
+            }
+
+            /* --- Sync background animation (neon grid, scanlines, skyline) --- */
+            function initSyncBG() {
+                syncBgCanvas = document.getElementById('sync-bg-canvas');
+                if (!syncBgCanvas) return;
+                syncBgCtx = syncBgCanvas.getContext('2d');
+                syncBgCanvas.width = window.innerWidth;
+                syncBgCanvas.height = window.innerHeight;
+            }
+
+            function startSyncBG() {
+                if (!syncBgCtx) initSyncBG();
+                if (!syncBgCtx) return;
+                if (syncBgRAF) cancelAnimationFrame(syncBgRAF);
+                syncOffset = 0;
+                function loop(ts) {
+                    drawSyncBG(ts || performance.now());
+                    syncBgRAF = requestAnimationFrame(loop);
+                }
+                syncBgRAF = requestAnimationFrame(loop);
+            }
+
+            function stopSyncBG() {
+                if (syncBgRAF) cancelAnimationFrame(syncBgRAF);
+                syncBgRAF = null;
+                if (syncBgCtx && syncBgCanvas) {
+                    syncBgCtx.clearRect(0, 0, syncBgCanvas.width, syncBgCanvas.height);
+                }
+            }
+
+            function drawSyncBG(ts) {
+                if (!syncBgCtx || !syncBgCanvas) return;
+                const w = syncBgCanvas.width;
+                const h = syncBgCanvas.height;
+                const t = (ts || performance.now()) / 1000;
+                syncOffset = t;
+
+                // base gradient
+                const g = syncBgCtx.createLinearGradient(0, 0, 0, h);
+                g.addColorStop(0, 'rgba(6,6,10,0.88)');
+                g.addColorStop(1, 'rgba(2,0,12,0.95)');
+                syncBgCtx.fillStyle = g;
+                syncBgCtx.fillRect(0, 0, w, h);
+
+                // drifting fog stripes
+                for (let i = 0; i < 3; i++) {
+                    syncBgCtx.globalAlpha = 0.03 + i * 0.02;
+                    syncBgCtx.fillStyle = `rgba(${188},${19},${254},${0.06 + i*0.02})`;
+                    const y = (Math.sin(t * (0.2 + i * 0.1) + i) * h * 0.08) + (h * 0.15 * i);
+                    syncBgCtx.fillRect(0, y, w, h * 0.15);
+                }
+                syncBgCtx.globalAlpha = 1;
+
+                // perspective grid (horizontal bands)
+                syncBgCtx.lineWidth = 1;
+                for (let i = 1; i <= 18; i++) {
+                    const ratio = i / 18;
+                    // ease more lines near horizon
+                    const y = h - Math.pow(ratio, 1.3) * h * 0.7;
+                    const glow = 0.06 + (1 - ratio) * 0.18;
+                    syncBgCtx.strokeStyle = `rgba(0, 242, 255, ${glow})`;
+                    syncBgCtx.beginPath();
+                    syncBgCtx.moveTo(0, y);
+                    syncBgCtx.lineTo(w, y);
+                    syncBgCtx.stroke();
+                }
+
+                // converging vanishing lines from bottom center
+                const cx = w * 0.5;
+                for (let i = -8; i <= 8; i++) {
+                    const ang = i * 0.12 + Math.sin(t * 0.6 + i) * 0.02;
+                    const dx = Math.tan(ang) * h;
+                    const alpha = 0.02 + (1 - Math.abs(i) / 12) * 0.08;
+                    syncBgCtx.strokeStyle = `rgba(188,19,254,${alpha})`;
+                    syncBgCtx.beginPath();
+                    syncBgCtx.moveTo(cx, h);
+                    syncBgCtx.lineTo(cx + dx, h * 0.35);
+                    syncBgCtx.stroke();
+                }
+
+                // moving scan beam
+                const beamX = (Math.sin(t * 0.9) * 0.5 + 0.5) * w;
+                const beamW = Math.max(120, w * 0.05);
+                const beam = syncBgCtx.createLinearGradient(beamX - beamW, 0, beamX + beamW, 0);
+                beam.addColorStop(0, 'rgba(255,255,255,0)');
+                beam.addColorStop(0.5, 'rgba(255,255,255,0.06)');
+                beam.addColorStop(1, 'rgba(255,255,255,0)');
+                syncBgCtx.fillStyle = beam;
+                syncBgCtx.globalCompositeOperation = 'lighter';
+                syncBgCtx.fillRect(beamX - beamW, 0, beamW * 2, h);
+                syncBgCtx.globalCompositeOperation = 'source-over';
+
+                // simple skyline silhouette - blocks with neon top glow
+                const skylineH = Math.max(60, Math.floor(h * 0.18));
+                const blockCount = Math.floor(w / 60);
+                for (let i = 0; i < blockCount; i++) {
+                    const bw = 30 + (Math.sin(t + i) + 1) * 15;
+                    const bx = i * (w / blockCount) + (Math.sin(t * 0.3 + i) * 6);
+                    const bh = skylineH * (0.3 + (Math.abs(Math.sin(i * 0.7 + t)) * 0.9));
+                    syncBgCtx.fillStyle = 'rgba(6,6,10,0.95)';
+                    syncBgCtx.fillRect(bx, h - bh, bw, bh);
+                    // neon top line
+                    syncBgCtx.strokeStyle = `rgba(255,207,16,${0.06 + (Math.random()*0.05)})`;
+                    syncBgCtx.lineWidth = 2;
+                    syncBgCtx.beginPath();
+                    syncBgCtx.moveTo(bx, h - bh);
+                    syncBgCtx.lineTo(bx + bw, h - bh);
+                    syncBgCtx.stroke();
+                }
+
+                // faint floating hex glyphs
+                syncBgCtx.font = '12px JetBrains Mono, monospace';
+                syncBgCtx.fillStyle = 'rgba(0,242,255,0.04)';
+                for (let i = 0; i < 30; i++) {
+                    const gx = (Math.sin(t * (0.1 + i * 0.01) + i) * 0.5 + 0.5) * w;
+                    const gy = (Math.cos(t * (0.07 + i * 0.008) + i) * 0.5 + 0.5) * (h * 0.5);
+                    syncBgCtx.fillText((Math.floor(Math.abs(Math.sin(i + t)) * 15)).toString(16).toUpperCase(), gx, gy);
+                }
+            }
+
+            window.onload = () => {
+                start();
+                const noBtn = document.getElementById('no-btn');
+                if (noBtn) {
+                    noBtn.onmouseover = () => {
+                        const x = Math.random() * (window.innerWidth - 180);
+                        const y = Math.random() * (window.innerHeight - 80);
+                        noBtn.className = 'cyber-btn decline evasive';
+                        noBtn.style.left = x + 'px';
+                        noBtn.style.top = y + 'px';
+                        const log = document.createElement('div');
+                        log.style.color = 'var(--neon-red)';
+                        log.style.fontSize = "0.6rem";
+                        log.innerHTML = `[CRITICAL] UNAUTHORIZED_NEGATION: Re-routing affection to primary node.`;
+                        document.getElementById('term-out').appendChild(log);
+                    };
+                }
+                const yesBtn = document.getElementById('yes-btn');
+                if (yesBtn) {
+                    yesBtn.onclick = () => { 
+                        document.getElementById('auth-success').style.display = 'flex';
+                        document.querySelector('.os-interface').style.display = 'none';
+                        triggerParticles();
+                        // start the enhanced sync background animation
+                        startSyncBG();
+                    };
+                }
+                const tIn = document.getElementById('term-in');
+                if (tIn) {
+                    tIn.onkeydown = (e) => { if(e.key === 'Enter') processResponse(); };
+                }
+
+                // love note button handler
+                const lnBtn = document.getElementById('love-note-btn');
+                if (lnBtn) {
+                    lnBtn.addEventListener('click', generateLoveNote);
+                }
+
+                // save forever button handler
+                const saveBtn = document.getElementById('save-forever-btn');
+                console.log('saveBtn element found:', saveBtn);
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', saveLoveCommitment);
+                    console.log('Event listener attached to save-forever-btn');
+                } else {
+                    console.error('save-forever-btn not found!');
+                }
+            };
+        })();
+    </script>
+</body>
+</html>
